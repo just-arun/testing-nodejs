@@ -55,7 +55,7 @@ To set up the basic tests, create a new folder called “test” in the project 
     └── test-server.js
 ```
 Now add the following code to the new file:
-
+```js
 describe('Blobs', function() {
   it('should list ALL blobs on /blobs GET');
   it('should list a SINGLE blob on /blob/<id> GET');
@@ -63,16 +63,18 @@ describe('Blobs', function() {
   it('should update a SINGLE blob on /blob/<id> PUT');
   it('should delete a SINGLE blob on /blob/<id> DELETE');
 });
-Although this is just boilerplate, pay attention to the describe() block and it() statements. describe() is used for grouping tests in a logical manner. Meanwhile, the it() statements contain each individual test case, which generally (err, should) test a single feature or edge case.
+```
+Although this is just boilerplate, pay attention to the `describe()` block and `it()` statements. `describe()` is used for grouping tests in a logical manner. Meanwhile, the `it()` statements contain each individual test case, which generally (err, should) test a single feature or edge case.
 
-Logic
+# Logic
 To add the necessary logic, we’ll utilize Chai (v3.2.0), an assertion library, and chai-http (v 1.0.0), for making the actual HTTP requests and then testing the responses.
 
 Install them both now:
-
+```npm
 $ npm install chai@3.2.0 chai-http@1.0.0 --save-dev
+```
 Then update test-server.js, like so:
-
+```js
 var chai = require('chai');
 var chaiHttp = require('chai-http');
 var server = require('../server/app');
@@ -88,15 +90,16 @@ describe('Blobs', function() {
   it('should update a SINGLE blob on /blob/<id> PUT');
   it('should delete a SINGLE blob on /blob/<id> DELETE');
 });
-Here, we required the new packages, chai and chai-http, and our app.js file in order to make requests to the app. We also used the should assertion library so we can utilize BDD-style assertions.
+```
+Here, we required the new packages, chai and chai-http, and our app.js file in order to make requests to the app. We also used the should assertion library so we can utilize **BDD-style assertions.**
 
-One of the powerful aspects of Chai is that it allows you to choose the type of assertion style you’d like to use. Check out the Assertion Style Guide for more info. Also, aside for the assertion libraries included with Chai, there are a number of other libraries available via NPM and Github.
+> One of the powerful aspects of Chai is that it allows you to choose the type of assertion style you’d like to use. Check out the Assertion Style Guide for more info. Also, aside for the assertion libraries included with Chai, there are a number of other libraries available via NPM and Github.
 
 Now we can write our tests…
 
 Test - GET (all)
 Update the first it() statement:
-
+```js
 it('should list ALL blobs on /blobs GET', function(done) {
   chai.request(server)
     .get('/blobs')
@@ -105,12 +108,13 @@ it('should list ALL blobs on /blobs GET', function(done) {
       done();
     });
 });
+```
 So, we passed an anonymous function with a single argument of done (a function) to the it() statement. This argument ends the test case when called - e.g., done(). The test itself is simple: We made a GET request to the /blobs endpoint and then asserted that the response contained a 200 HTTP status code.
 
 Simple, right?
 
 To test, simply run mocha; and if all went well, you should see:
-
+```
 $ mocha
 
 
@@ -126,8 +130,9 @@ GET /blobs 200 19.621 ms - 2
 
   1 passing (72ms)
   4 pending
+```
 Since testing the status code alone isn’t very significant, let’s add some more assertions:
-
+```js
 it('should list ALL blobs on /blobs GET', function(done) {
   chai.request(server)
     .get('/blobs')
@@ -138,13 +143,14 @@ it('should list ALL blobs on /blobs GET', function(done) {
       done();
     });
 });
+```
 This should be straightforward, since these assertions read like plain English. Run the test suite again. It passes, right? This test still isn’t complete, since we’re not testing any of the actual data being returned. We’ll get to that shortly.
 
 How about testing a POST request…
 
-Test - POST
+# Test - POST
 Based on the code within index.js, when a new “blob” is successfully added, we should see the following response:
-
+```json
 {
   "SUCCESS": {
     "__v": 0,
@@ -153,10 +159,11 @@ Based on the code within index.js, when a new “blob” is successfully added, 
     "_id": "some-unique-id"
   }
 }
-Need proof? Test this out by logging {'SUCCESS': newBlob} to the console, and then run a manual test to see what gets logged.
+```
+> Need proof? Test this out by logging {'SUCCESS': newBlob} to the console, and then run a manual test to see what gets > logged.
 
 With that, think about how you would write/structure your assertions to test this…
-
+```js
 it('should add a SINGLE blob on /blobs POST', function(done) {
   chai.request(server)
     .post('/blobs')
@@ -175,15 +182,16 @@ it('should add a SINGLE blob on /blobs POST', function(done) {
       done();
     });
 });
+```
 Need help understanding what’s happening here? Add console.log(res.body) just before the first assert. Run the test to see the data contained within the response body. The test we wrote tests the actual structure and data from the response body, broken down by each individual key/value pair.
 
-Hooks
+# Hooks
 Up to this point we have been using the main database for testing purposes, which is not ideal since we’re polluting the database with test data. Instead, let’s utilize a test database and add a dummy blob to it to assert against. To do this, we can use the beforeEach() and afterEach() hooks - which, as the names suggest, add and remove a dummy document to the database before and after each test case is ran.
 
 This sounds a bit difficult, but with Mocha it’s super easy!
 
 Start by adding a configuration file called _config.js to the “server” folder in order to specify a different database URI for testing purposes:
-
+```js
 var config = {};
 
 config.mongoURI = {
@@ -192,8 +200,9 @@ config.mongoURI = {
 };
 
 module.exports = config;
+```
 Next, update app.js to utilize the test database when the environment variable app.settings.env evaluates to test. (The default is development.)
-
+```js
 // *** config file *** //
 var config = require('./_config');
 
@@ -205,8 +214,9 @@ mongoose.connect(config.mongoURI[app.settings.env], function(err, res) {
     console.log('Connected to Database: ' + config.mongoURI[app.settings.env]);
   }
 });
+```
 Finally, update the requirements and add the hooks to the testing script:
-
+```js
 process.env.NODE_ENV = 'test';
 
 var chai = require('chai');
@@ -239,13 +249,14 @@ describe('Blobs', function() {
   });
 
 ...snip...
+```
 Now, before each test case, the database is cleared and a new blob is added; then, after each test, the database is cleared before the next test case is ran.
 
 Run the tests again to ensure they still pass.
 
-Test - GET (all)
+# Test - GET (all)
 With the hooks set up, let’s refactor the first test to assert that the blob from the beforeEach() is part of the collection:
-
+```js
 it('should list ALL blobs on /blobs GET', function(done) {
   chai.request(server)
     .get('/blobs')
@@ -261,9 +272,11 @@ it('should list ALL blobs on /blobs GET', function(done) {
       done();
     });
 });
+```
 Let’s look at the final three tests…
 
-Test - GET (single)
+# Test - GET (single)
+```js
 it('should list a SINGLE blob on /blob/<id> GET', function(done) {
     var newBlob = new Blob({
       name: 'Super',
@@ -286,9 +299,11 @@ it('should list a SINGLE blob on /blob/<id> GET', function(done) {
         });
     });
 });
+```
 In this test case, we first added a new blob, and then used the newly created _id to make the request and then test the subsequent response.
 
-Test - PUT
+# Test - PUT
+```js
 it('should update a SINGLE blob on /blob/<id> PUT', function(done) {
   chai.request(server)
     .get('/blobs')
@@ -309,11 +324,12 @@ it('should update a SINGLE blob on /blob/<id> PUT', function(done) {
       });
     });
 });
+```
 Here, we hit the /blobs endpoint with a GET request to grab the blob added from the beforeEach() hook, then we simply added the _id to the URL for the PUT request and updated the name to Spider.
 
-Test - DELETE
-Finally…
+# Test - DELETE
 
+```js
 it('should delete a SINGLE blob on /blob/<id> DELETE', function(done) {
   chai.request(server)
     .get('/blobs')
@@ -333,5 +349,4 @@ it('should delete a SINGLE blob on /blob/<id> DELETE', function(done) {
       });
     });
 });
-Conclusion
-Hopefully you can now see just how easy it is to test your code with Mocha and Chai. Keep practicing on your own, incorporating a true BDD approach into your workflow. Grab the final code for this tutorial from the repository.
+```
