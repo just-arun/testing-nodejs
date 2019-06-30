@@ -1,29 +1,30 @@
 # testing-nodejs server
-Testing Node.js with Mocha and Chai
-Last update: Sep 10, 2015 • node, mocha, testing
+# Testing Node.js with Mocha and Chai
+> Last update: Sep 10, 2015 • `node, mocha, testing`
 
-This post serves as an introduction to testing a Node.js RESTful API with Mocha (v2.3.1), a JavaScript testing framework.
+#### This post serves as an introduction to testing a Node.js RESTful API with Mocha (v2.3.1), a JavaScript testing framework.
 
 mocha and chai.js
-Contents
-Why Test?
-Structure
-Logic
-Test - GET (all)
-Test - POST
-Hooks
-Test - GET (all)
-Test - GET (single)
-Test - PUT
-Test - DELETE
-Conclusion
-Why Test?
+## Contents
+- Why Test?
+- Structure
+- Logic
+- Test - GET (all)
+- Test - POST
+- Hooks
+- Test - GET (all)
+- Test - GET (single)
+- Test - PUT
+- Test - DELETE
+- Conclusion
+## Why Test?
 Before diving in it’s important that you understand why tests are necessary.
 
 Grab the Node/Express sample CRUD application from the repository:
-
+```npm
 $ git clone https://github.com/mjhea0/node-mocha-chai-tutorial.git
 $ git checkout tags/v1
+```
 Once you have v1 of the app, manually go through it and test each of the CRUD functions via cURL (or HTTPie or Postman):
 
 Add new blobs
