@@ -20,28 +20,30 @@ mocha and chai.js
 ## Why Test?
 Before diving in it’s important that you understand why tests are necessary.
 
-Grab the Node/Express sample CRUD application from the repository:
+Grab the Node/Express sample CRUD application from the **repository**:
 ```npm
 $ git clone https://github.com/mjhea0/node-mocha-chai-tutorial.git
 $ git checkout tags/v1
 ```
-Once you have v1 of the app, manually go through it and test each of the CRUD functions via cURL (or HTTPie or Postman):
+Once you have v1 of the app, manually go through it and test each of the CRUD functions via cURL (or **HTTPie** or **Postman**):
 
-Add new blobs
-View all blobs
-View a single blob
-Update a single blob
-Delete a single blob
+[1] Add new blobs
+[2] View all blobs
+[3] View a single blob
+[4] Update a single blob
+[5] Delete a single blob
+
 This is a tedious process. What if you had to go through this same manual process every single time a new feature got added to the application? That would not only be a massive misuse of time - but unreliable as well. Hence the need for setting up a testing framework for automating the testing of the application, so you can run hundreds of tests in a matter of seconds.
 
 With that, install Mocha:
-
+```npm
 $ npm install -g mocha@2.3.1
-We installed this globally so we’ll be able to run mocha from the terminal.
+```
+> We installed this globally so we’ll be able to run mocha from the terminal.
 
-Structure
+## Structure
 To set up the basic tests, create a new folder called “test” in the project root, then within that folder add a file called test-server.js. Your file/folder structure should now look like:
-
+```
 ├── package.json
 ├── server
 │   ├── app.js
@@ -51,6 +53,7 @@ To set up the basic tests, create a new folder called “test” in the project 
 │       └── index.js
 └── test
     └── test-server.js
+```
 Now add the following code to the new file:
 
 describe('Blobs', function() {
